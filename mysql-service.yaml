@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+    - name: mysql
+      port: 3307          # Service port inside the cluster
+      targetPort: 3307    # Matches container port from deployment
+  type: ClusterIP

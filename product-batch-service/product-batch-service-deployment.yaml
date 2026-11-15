@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-batch-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: product-batch-service
+  template:
+    metadata:
+      labels:
+        app: product-batch-service
+    spec:
+      containers:
+        - name: product-batch-service
+          image: sahanagn3005/product-batch-service:1.0.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3307/biznify_product_batch_service
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+            - name: SPRING_MAIL_USERNAME
+              value: sahanagn275@gmail.com
+            - name: SPRING_MAIL_PASSWORD
+              value: fypt xatx qwap dlsi
+            - name: SPRING_ACTIVEMQ_USER
+              value: admin
+            - name: SPRING_ACTIVEMQ_PASSWORD
+              value: admin
+            - name: SPRING_ACTIVEMQ_BROKER_URL
+              value: tcp://activemq:61616

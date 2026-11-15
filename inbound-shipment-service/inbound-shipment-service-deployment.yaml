@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inbound-shipment-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inbound-shipment-service
+  template:
+    metadata:
+      labels:
+        app: inbound-shipment-service
+    spec:
+      containers:
+        - name: inbound-shipment-service
+          image: sahanagn3005/inbound-shipment-service:1.0.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3307/biznify_inbound_shipment_service
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka-server:8761/eureka/
+            - name: EUREKA_CLIENT_REGISTER_WITH_EUREKA
+              value: "true"
+            - name: EUREKA_CLIENT_FETCH_REGISTRY
+              value: "true"
+            - name: SPRING_ACTIVEMQ_BROKER_URL
+              value: tcp://activemq:61616
+            - name: SPRING_ACTIVEMQ_USER
+              value: admin
+            - name: SPRING_ACTIVEMQ_PASSWORD
+              value: admin

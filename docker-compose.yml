@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql-biznify
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - biznify-network
+
+  partner-service:
+    container_name: partner-service
+    build:
+      context: ./partner-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/biznify_partner_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - biznify-network
+
+  product-service:
+    container_name: product-service
+    build:
+      context: ./product-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql
+      - partner-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/biznify_product_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      PARTNER_SERVICE_BASE_URL: http://partner-service:8081
+    networks:
+      - biznify-network
+
+  warehouse-service:
+    container_name: warehouse-service
+    build:
+      context: ./warehouse-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/biznify_warehouse_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - biznify-network
+
+  product-batch-service:
+    container_name: product-batch-service
+    build:
+      context: ./product-batch-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/biznify_product_batch_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - biznify-network
+
+  inbound-shipment-service:
+    container_name: inbound-shipment-service
+    build:
+      context: ./inbound-shipment-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/biznify_inbound_shipment_service
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - biznify-network
+
+networks:
+  biznify-network:
